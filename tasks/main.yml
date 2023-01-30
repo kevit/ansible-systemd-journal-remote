@@ -1,0 +1,44 @@
+---
+- name: Install dependencies
+  ansible.builtin.package:
+    name:
+      - systemd-journal-remote
+
+- name: Create system service
+  template:
+    src: systemd-journal-remote.service.j2
+    dest: /etc/systemd/system/systemd-journal-remote.service
+    owner: root
+    group: root
+
+- name: Create a remote log directory
+  ansible.builtin.file:
+    path: /var/log/remote
+    state: directory
+    owner: systemd-journal-remote 
+
+- name: 'Enable journal-gatewayd service'
+  systemd:
+    name: systemd-journal-gatewayd
+    state: started
+    enabled: yes
+
+- name: 'Reload journal-upload service'
+  systemd:
+    name: systemd-journal-upload
+    state: restarted
+
+- name: 'Enable journal-remote service'
+  systemd:
+    name: systemd-journal-remote
+    state: started
+    enabled: yes
+
+- name: 'Enable journal-remote socket'
+  systemd:
+    name: systemd-journal-remote.socket
+    state: started
+    enabled: yes
+
+#systemctl enable systemd-journal-remote.socket
+#systemctl start systemd-journal-gatewayd.socket

@@ -1,0 +1,20 @@
+[Unit]
+Description=Journal Remote Sink Service
+Documentation=man:systemd-journal-remote(8) man:journal-remote.conf(5)
+Requires=systemd-journal-remote.socket
+
+[Service]
+ExecStart=/lib/systemd/systemd-journal-remote \
+          --listen-http=-3 \
+          --output=/var/log/remote/
+
+User=systemd-journal-remote
+Group=systemd-journal-remote
+PrivateTmp=yes
+PrivateDevices=yes
+PrivateNetwork=yes
+WatchdogSec=3min
+
+
+[Install]
+Also=systemd-journal-remote.socket
